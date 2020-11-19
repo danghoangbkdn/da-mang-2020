@@ -1,1 +1,2 @@
-# da-mang-2020
+# DA-Mang-2020.11.19
+VERSION: 1.0
