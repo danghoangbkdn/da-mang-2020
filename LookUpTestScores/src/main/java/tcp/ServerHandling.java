@@ -39,16 +39,19 @@ public class ServerHandling extends Thread {
 				while (true) {
 					try {
 						Object obj = ois.readObject();
+						System.out.println(obj);
 						if (obj instanceof RequestSearch) {
 							if (((RequestSearch) obj).getId().equals("s1")) {
 								System.out.println("Searching the ...");
 								oos.writeObject(searchStudent(obj));
 								System.out.println("Searched ...");
-							} else if (((RequestSearch) obj).getInputId().equals("input")) {
+							} else if (((RequestSearch) obj).getId().equals("s2")) {
 								System.out.println("Searching the ...");
 								oos.writeObject(getListStudents(obj));
 								System.out.println("Searched ...");
-							} else if (((RequestSearch) obj).getRequest().equals("ShowAll")) {
+							}
+						} else if (obj instanceof RequestShowAll) {
+							if (((RequestShowAll) obj).getRequest().equals("ShowAll")) {
 								System.out.println("Searching the...");
 								oos.writeObject(getListStudentsByYear(obj));
 								System.out.println("Searched ...");
@@ -69,7 +72,6 @@ public class ServerHandling extends Thread {
 					e1.printStackTrace();
 				}
 				System.out.println("- Client[" + this.location + "] disconnected !");
-//				System.err.println("Connection Error: " + e);
 				break;
 			}
 		}
