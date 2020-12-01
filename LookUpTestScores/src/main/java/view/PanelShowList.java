@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -22,13 +23,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
 
-import controller.ListStudentController;
-import controller.ListStudentControllerImpl;
+import entity.RequestSearch;
+import entity.RequestShowAll;
 import entity.Student;
-import tcp.ClientHandling;
+import tcp.ClientHandler;
 
 @SuppressWarnings("serial")
 public class PanelShowList extends JPanel {
@@ -48,10 +51,20 @@ public class PanelShowList extends JPanel {
 
 	private final BorderLayout borderLayout = new BorderLayout();
 	private final Font font = new FontUIResource("Tamaho", Font.PLAIN, 13);
-	private final ListStudentController controller;
+	private final Border outsideBorderTop = BorderFactory.createLineBorder(new Color(0, 51, 51), 2);
+	private final Border insideBorderTop = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+			"TÌM KIẾM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 13), new Color(0, 0, 204));
+	private final Border borderTop = BorderFactory.createCompoundBorder(outsideBorderTop, insideBorderTop);
+	private final Border outsideBorderBot = BorderFactory.createLineBorder(new Color(204, 0, 102), 2);
+	private final Border insideBorderBot = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+			"DANH SÁCH", TitledBorder.CENTER, TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 13),
+			new Color(0, 0, 204));
+	private final Border borderBot = BorderFactory.createCompoundBorder(outsideBorderBot, insideBorderBot);
 
-	public PanelShowList(ClientHandling client) {
-		controller = new ListStudentControllerImpl();
+	private final ClientHandler client;
+
+	public PanelShowList(ClientHandler client) {
+		this.client = client;
 
 		initComponents();
 		initEvents();
@@ -75,53 +88,57 @@ public class PanelShowList extends JPanel {
 		columnNames = new String[] { "SBD", "Họ Tên", "Ngày Sinh", "Trường THPT", "Cụm Thi", "Năm Thi" };
 
 		pnTop.setLayout(null);
-		pnTop.setPreferredSize(new Dimension(0, 100));
-		pnTop.setBackground(Color.PINK);
+		pnTop.setPreferredSize(new Dimension(0, 70));
+		pnTop.setBackground(new Color(0, 255, 255));
+		pnTop.setBorder(borderTop);
 
 		tfSearch.setFont(font);
-		tfSearch.setBounds(100, 20, 280, 40);
+		tfSearch.setBounds(20, 13, 235, 35);
 		pnTop.add(tfSearch);
 
-		lbNot.setFont(font);
+		lbNot.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lbNot.setForeground(Color.RED);
 		lbNot.setText("Không tìm thấy !");
-		lbNot.setBounds(100, 70, getPreWidth(lbNot), getPreHeight(lbNot));
+		lbNot.setBounds(20, 50, getPreWidth(lbNot), getPreHeight(lbNot));
 		lbNot.setVisible(false);
 		pnTop.add(lbNot);
 
 		btSearch.setFont(font);
 		btSearch.setText("Search");
-		btSearch.setBounds(400, 20, getPreWidth(btSearch) + 5, 40);
+		btSearch.setBounds(270, 13, getPreWidth(btSearch), 35);
 		btSearch.setFocusable(false);
 		btSearch.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		pnTop.add(btSearch);
 
 		btAll.setFont(font);
-		btAll.setText("ShowAll");
-		btAll.setBounds(425 + getPreWidth(btSearch), 20, getPreWidth(btAll), 40);
+		btAll.setText("Show");
+		btAll.setBounds(670 + getPreWidth(btSearch), 15, getPreWidth(btAll) + 8, 35);
 		btAll.setFocusable(false);
 		btAll.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		pnTop.add(btAll);
 
 		lbYear.setFont(font);
 		lbYear.setText("Chọn năm: ");
-		lbYear.setBounds(555 + getPreWidth(btSearch), 30, getPreWidth(lbYear), getPreHeight(lbYear));
+		lbYear.setBounds(490 + getPreWidth(btSearch), 25, getPreWidth(lbYear), getPreHeight(lbYear));
 		pnTop.add(lbYear);
 
 		cbYears.setFont(font);
 		cbYears.setModel(new DefaultComboBoxModel<>(new String[] { "2019", "2020" }));
 		cbYears.setSelectedItem("2020");
-		cbYears.setBounds(635 + getPreWidth(lbYear), 20, getPreWidth(cbYears) + 20, 40);
+		cbYears.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		cbYears.setBounds(570 + getPreWidth(lbYear), 15, getPreWidth(cbYears) + 23, 35);
 		pnTop.add(cbYears);
 
 		add(pnTop, NORTH);
 
 		pnBot.setLayout(null);
-		pnBot.setBackground(Color.PINK);
+		pnBot.setBackground(Color.WHITE);
+		pnBot.setBorder(borderBot);
 
 		tbResult.setModel(tbmdResult);
 		tbResult.setFont(font);
-		spResult.setBounds(90, 0, 700, 340);
+		tbResult.setBackground(new Color(255, 204, 204));
+		spResult.setBounds(10, 18, 832, 361);
 		setTableColumns();
 		setTableRows(Integer.parseInt((String) cbYears.getSelectedItem()));
 		spResult.setViewportView(tbResult);
@@ -135,7 +152,7 @@ public class PanelShowList extends JPanel {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					search(Integer.parseInt((String) cbYears.getSelectedItem()));
+					search();
 				}
 			}
 		});
@@ -143,7 +160,7 @@ public class PanelShowList extends JPanel {
 		btSearch.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				search(Integer.parseInt((String) cbYears.getSelectedItem()));
+				search();
 			}
 		});
 
@@ -159,7 +176,9 @@ public class PanelShowList extends JPanel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				String id = tbResult.getValueAt(tbResult.getSelectedRow(), 0).toString();
-				new UIInformation(id, Integer.parseInt((String) cbYears.getSelectedItem())).setVisible(true);
+				int year = Integer.parseInt(tbResult.getValueAt(tbResult.getSelectedRow(), 5).toString());
+				Student student = client.getStudent(new RequestSearch("s1", btSearch.getText(), id, year));
+				new UIInformation(student).setVisible(true);
 			}
 		});
 	}
@@ -169,24 +188,24 @@ public class PanelShowList extends JPanel {
 
 		tbmdResult.setColumnIdentifiers(columnNames);
 		tbResult.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		tbResult.getColumnModel().getColumn(0).setPreferredWidth(100);
-		tbResult.getColumnModel().getColumn(1).setPreferredWidth(170);
-		tbResult.getColumnModel().getColumn(2).setPreferredWidth(100);
-		tbResult.getColumnModel().getColumn(3).setPreferredWidth(170);
-		tbResult.getColumnModel().getColumn(4).setPreferredWidth(80);
-		tbResult.getColumnModel().getColumn(5).setPreferredWidth(80);
+		tbResult.getColumnModel().getColumn(0).setPreferredWidth(110);
+		tbResult.getColumnModel().getColumn(1).setPreferredWidth(180);
+		tbResult.getColumnModel().getColumn(2).setPreferredWidth(110);
+		tbResult.getColumnModel().getColumn(3).setPreferredWidth(200);
+		tbResult.getColumnModel().getColumn(4).setPreferredWidth(110);
+		tbResult.getColumnModel().getColumn(5).setPreferredWidth(100);
 	}
 
 	private void setTableRows(int year) {
 		tbResult.setRowHeight(20);
-		Object[][] std = controller.getListStudentObj(year);
+		Object[][] std = client.getListStudentsByYear(new RequestShowAll("ShowAll", year));
 
 		for (Object[] student : std) {
 			tbmdResult.addRow(new Object[] { student[0], student[1], student[2], student[3], student[4], student[5] });
 		}
 	}
 
-	private void search(int parseInt) {
+	private void search() {
 		String input = tfSearch.getText();
 		int year = Integer.parseInt((String) cbYears.getSelectedItem());
 		String pattern = "[!\\\"#$%&'()*+,-./:;<=>?@[\\\\]^_`{|}~}]+";
@@ -195,7 +214,7 @@ public class PanelShowList extends JPanel {
 			return;
 		} else if (!input.trim().matches(pattern)) {
 			tbmdResult.setRowCount(0);
-			List<Student> std = controller.searchListStudents(year, input);
+			List<Student> std = client.getListStudents(new RequestSearch("s2", btSearch.getText(), input, year));
 			std.sort((s1, s2) -> s1.getId().compareTo(s2.getId()));
 			if (std.size() > 0) {
 				lbNot.setVisible(false);

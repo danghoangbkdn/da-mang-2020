@@ -46,7 +46,7 @@ public class Server {
 						int location = listSockets.size();
 						System.out.println("- Client[" + location + "] accepted: " + socket);
 						System.out.println("=> [Number of Clients: " + location + "]");
-						new ServerHandling(socket, location);
+						new ServerHandler(socket, location);
 					}).start();
 				} catch (IOException e) {
 					System.err.println("1. Connection Error: " + e);
