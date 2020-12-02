@@ -11,13 +11,12 @@ import java.util.List;
 import controller.StudentController;
 import controller.StudentControllerImpl;
 import entity.RequestSearch;
-import entity.RequestShowAll;
+import entity.RequestGetListStudentsByYear;
 import entity.Student;
 
 public class ServerHandler extends Thread {
 
 	private final StudentController controller;
-	private final int location;
 
 	private DataInputStream dis = null;
 	private ObjectInputStream ois = null;
@@ -26,7 +25,6 @@ public class ServerHandler extends Thread {
 
 	public ServerHandler(Socket socket, int location) {
 		controller = new StudentControllerImpl();
-		this.location = location;
 
 		while (true) {
 			try {
@@ -39,22 +37,19 @@ public class ServerHandler extends Thread {
 				while (true) {
 					try {
 						Object obj = ois.readObject();
-						System.out.println(obj);
 						if (obj instanceof RequestSearch) {
-							if (((RequestSearch) obj).getId().equals("s1")) {
-								System.out.println("Searching the ...");
+							if (((RequestSearch) obj).getRequest().equals("Search")) {
+								System.out.println("- Request from Client[" + location + "] : Search");
 								oos.writeObject(searchStudent(obj));
-								System.out.println("Searched ...");
-							} else if (((RequestSearch) obj).getId().equals("s2")) {
-								System.out.println("Searching the ...");
-								oos.writeObject(getListStudents(obj));
-								System.out.println("Searched ...");
+								continue;
 							}
-						} else if (obj instanceof RequestShowAll) {
-							if (((RequestShowAll) obj).getRequest().equals("ShowAll")) {
-								System.out.println("Searching the...");
+						}
+						if (obj instanceof RequestGetListStudentsByYear) {
+							if (((RequestGetListStudentsByYear) obj).getRequest()
+									.equals("Get List<Student> students by year")) {
+								System.out.println(
+										"- Request from Client[" + location + "] : Get List<Student> students by year");
 								oos.writeObject(getListStudentsByYear(obj));
-								System.out.println("Searched ...");
 							}
 						}
 					} catch (ClassNotFoundException e) {
@@ -71,7 +66,7 @@ public class ServerHandler extends Thread {
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-				System.out.println("- Client[" + this.location + "] disconnected !");
+				System.out.println("- Client[" + location + "] disconnected !");
 				break;
 			}
 		}
@@ -81,11 +76,7 @@ public class ServerHandler extends Thread {
 		return controller.searchStudent(((RequestSearch) obj).getInputId(), ((RequestSearch) obj).getInputYear());
 	}
 
-	private List<Student> getListStudents(Object obj) {
-		return controller.searchListStudents(((RequestSearch) obj).getInputYear(), ((RequestSearch) obj).getInputId());
-	}
-
-	private Object[][] getListStudentsByYear(Object obj) {
-		return controller.getListStudentObj(((RequestShowAll) obj).getYear());
+	private List<Student> getListStudentsByYear(Object obj) {
+		return controller.getListStudentsByYear(((RequestGetListStudentsByYear) obj).getYear());
 	}
 }

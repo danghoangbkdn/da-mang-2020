@@ -6,7 +6,6 @@ public class RequestSearch implements Serializable {
 
 	private static final long serialVersionUID = -7479498537698420700L;
 
-	private String id;
 	private String request;
 	private String inputId;
 	private int inputYear;
@@ -14,8 +13,7 @@ public class RequestSearch implements Serializable {
 	public RequestSearch() {
 	}
 
-	public RequestSearch(String id, String request, String inputId, int inputYear) {
-		this.setId(id);
+	public RequestSearch(String request, String inputId, int inputYear) {
 		this.request = request;
 		this.inputId = inputId;
 		this.inputYear = inputYear;
@@ -43,13 +41,5 @@ public class RequestSearch implements Serializable {
 
 	public void setInputYear(int inputYear) {
 		this.inputYear = inputYear;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 }

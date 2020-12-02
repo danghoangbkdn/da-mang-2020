@@ -51,7 +51,7 @@ public class UIClient extends JFrame {
 
 	private final BorderLayout borderLayout = new BorderLayout();
 	private final GridLayout gridLayout = new GridLayout(8, 0, 5, 5);
-	private final BorderLayout layoutPNCenter = new BorderLayout();
+	private final BorderLayout layoutPanelCenter = new BorderLayout();
 
 	private final Font titleFont = new FontUIResource("Tamaho", Font.BOLD, 36);
 	private final Font textButton = new FontUIResource("Tamaho", Font.BOLD, 13);
@@ -175,7 +175,7 @@ public class UIClient extends JFrame {
 //		pnCenter.add(new PanelSearch(client), "Looking For Students");
 //		pnCenter.add(new PanelShowList(client), "Show List Students");
 
-		pnCenter.setLayout(layoutPNCenter);
+		pnCenter.setLayout(layoutPanelCenter);
 		pnCenter.add(new PanelHomePage(), CENTER);
 		spPane.add(pnCenter, RIGHT);
 

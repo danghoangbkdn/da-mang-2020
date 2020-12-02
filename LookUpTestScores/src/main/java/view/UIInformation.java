@@ -151,7 +151,7 @@ public class UIInformation extends JFrame {
 		lbAddress.setBounds(15, 75, getPreWidth(lbAddress), getPreHeight(lbAddress));
 
 		lbSchool.setFont(textFontTwo);
-		lbSchool.setText("Trường THPT: " + student.getHightSchool());
+		lbSchool.setText("Trường: " + student.getHightSchool());
 		lbSchool.setBounds(215, 75, getPreWidth(lbSchool), getPreHeight(lbSchool));
 
 		lbExamCluster.setFont(textFontTwo);

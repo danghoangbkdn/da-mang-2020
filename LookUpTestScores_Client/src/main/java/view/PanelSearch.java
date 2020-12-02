@@ -112,7 +112,7 @@ public class PanelSearch extends JPanel {
 		lbScoreMS = new JLabel();
 		lbScoreMT = new JLabel();
 
-		pnTop.setPreferredSize(new Dimension(0, 75));
+		pnTop.setPreferredSize(new Dimension(0, 70));
 		pnTop.setLayout(null);
 		pnTop.setBackground(new Color(0, 255, 255));
 		pnTop.setBorder(borderTop);
@@ -247,7 +247,9 @@ public class PanelSearch extends JPanel {
 		} else if (!id.trim().matches("[0-9]{7}")) {
 			findNothing();
 		} else {
-			Student student = client.getStudent(new RequestSearch("s1", btSearch.getText(), id, year));
+			RequestSearch request = new RequestSearch("Search", id, year);
+			System.out.println("[Request from Client] : " + request.getRequest());
+			Student student = client.getStudent(request);
 			if (student.getId() == null) {
 				findNothing();
 			} else {

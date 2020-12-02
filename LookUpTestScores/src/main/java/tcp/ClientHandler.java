@@ -6,11 +6,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 
 import entity.RequestSearch;
-import entity.RequestShowAll;
+import entity.RequestGetListStudentsByYear;
 import entity.Student;
 
 public class ClientHandler {
@@ -41,9 +40,9 @@ public class ClientHandler {
 
 		try {
 			oos.writeObject(request);
-			System.out.println("Searching ...");
+			System.out.println("\nSearching ...");
 			student = (Student) ois.readObject();
-			System.out.println("Student: " + student);
+			System.out.println("Student: " + student + "\n");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -51,26 +50,16 @@ public class ClientHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Student> getListStudents(RequestSearch request) {
-		List<Student> students = new ArrayList<>();
-
+	public List<Student> getListStudentsByYear(RequestGetListStudentsByYear request) {
 		try {
 			oos.writeObject(request);
-			students = (List<Student>) ois.readObject();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return students;
-	}
-
-	public Object[][] getListStudentsByYear(RequestShowAll request) {
-		try {
-			oos.writeObject(request);
-			Object[][] students = (Object[][]) ois.readObject();
+			System.out.println("\nAre retrieving data ...");
+			List<Student> students = (List<Student>) ois.readObject();
+			System.out.println("Successful data retrieval ! \n");
 			return students;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 }
