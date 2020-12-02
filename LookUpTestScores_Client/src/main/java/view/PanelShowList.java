@@ -188,12 +188,12 @@ public class PanelShowList extends JPanel {
 
 		tbmdResult.setColumnIdentifiers(columnNames);
 		tbResult.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		tbResult.getColumnModel().getColumn(0).setPreferredWidth(110);
+		tbResult.getColumnModel().getColumn(0).setPreferredWidth(100);
 		tbResult.getColumnModel().getColumn(1).setPreferredWidth(180);
 		tbResult.getColumnModel().getColumn(2).setPreferredWidth(110);
-		tbResult.getColumnModel().getColumn(3).setPreferredWidth(200);
+		tbResult.getColumnModel().getColumn(3).setPreferredWidth(220);
 		tbResult.getColumnModel().getColumn(4).setPreferredWidth(110);
-		tbResult.getColumnModel().getColumn(5).setPreferredWidth(100);
+		tbResult.getColumnModel().getColumn(5).setPreferredWidth(90);
 	}
 
 	private void setTableRows(int year) {

@@ -151,7 +151,7 @@ public class UIInformation extends JFrame {
 		lbAddress.setBounds(15, 75, getPreWidth(lbAddress), getPreHeight(lbAddress));
 
 		lbSchool.setFont(textFontTwo);
-		lbSchool.setText("Trường THPT: " + student.getHightSchool());
+		lbSchool.setText("Trường: " + student.getHightSchool());
 		lbSchool.setBounds(215, 75, getPreWidth(lbSchool), getPreHeight(lbSchool));
 
 		lbExamCluster.setFont(textFontTwo);
@@ -159,7 +159,7 @@ public class UIInformation extends JFrame {
 		lbExamCluster.setBounds(15, 105, getPreWidth(lbExamCluster), getPreHeight(lbExamCluster));
 
 		lbArea.setFont(textFontTwo);
-		lbArea.setText("Khu vực: " + student.getExamcluster());
+		lbArea.setText("Khu vực: " + student.getArea());
 		lbArea.setBounds(215, 105, getPreWidth(lbArea), getPreHeight(lbArea));
 
 		lbExamYear.setFont(textFontTwo);

@@ -159,7 +159,7 @@ public class UIInformation extends JFrame {
 		lbExamCluster.setBounds(15, 105, getPreWidth(lbExamCluster), getPreHeight(lbExamCluster));
 
 		lbArea.setFont(textFontTwo);
-		lbArea.setText("Khu vực: " + student.getExamcluster());
+		lbArea.setText("Khu vực: " + student.getArea());
 		lbArea.setBounds(215, 105, getPreWidth(lbArea), getPreHeight(lbArea));
 
 		lbExamYear.setFont(textFontTwo);

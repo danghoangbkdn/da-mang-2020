@@ -41,7 +41,7 @@ public class StudentControllerImpl implements StudentController {
 			std[count][0] = s.getId();
 			std[count][1] = s.getFullname();
 			std[count][2] = s.getDayOfBirth();
-			std[count][3] = s.getHightSchool();
+			std[count][3] = "Trường " + s.getHightSchool();
 			std[count][4] = s.getExamcluster();
 			std[count++][5] = s.getYear();
 		}

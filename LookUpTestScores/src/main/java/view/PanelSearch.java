@@ -317,7 +317,7 @@ public class PanelSearch extends JPanel {
 		lbExamCluster.setVisible(true);
 
 		lbArea.setFont(textFontTwo);
-		lbArea.setText("Khu Vực: " + student.getExamcluster());
+		lbArea.setText("Khu Vực: " + student.getArea());
 		lbArea.setBounds(375, 140, getPreWidth(lbArea), getPreHeight(lbArea));
 		lbArea.setVisible(true);
 
