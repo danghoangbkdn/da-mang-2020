@@ -23,7 +23,7 @@ import entity.Student;
 import static utils.CompUtils.*;
 
 @SuppressWarnings("serial")
-public class UIInformation extends JFrame {
+public class FrameInformation extends JFrame {
 	private JPanel pnTop;
 	private JPanel pnBot;
 
@@ -54,7 +54,7 @@ public class UIInformation extends JFrame {
 
 	private final Student student;
 
-	public UIInformation(Student student) {
+	public FrameInformation(Student student) {
 		this.student = student;
 
 		setUndecorated(true);
@@ -218,7 +218,7 @@ public class UIInformation extends JFrame {
 		btCancel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				UIInformation.this.setVisible(false);
+				FrameInformation.this.setVisible(false);
 			}
 		});
 	}

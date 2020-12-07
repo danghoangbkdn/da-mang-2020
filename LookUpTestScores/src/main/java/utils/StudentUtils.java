@@ -10,6 +10,4 @@ public interface StudentUtils {
 	Object[][] convertValue(List<Student> students);
 
 	Student getStudent(List<Student> students, String id);
-
-	List<Student> getTopStudents(List<Student> students, String request);
 }

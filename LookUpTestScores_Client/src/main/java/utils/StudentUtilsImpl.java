@@ -40,38 +40,6 @@ public class StudentUtilsImpl implements StudentUtils {
 		return students.stream().filter(s -> s.getId().equals(id)).collect(Collectors.toList()).get(0);
 	}
 
-	@Override
-	public List<Student> getTopStudents(List<Student> students, String request) {
-		switch (request) {
-		case "Khối A":
-			students.sort((s1, s2) -> String.valueOf((s2.getToan() + s2.getDiem1() + s2.getDiem2()))
-					.compareTo(String.valueOf((s1.getToan() + s1.getDiem1() + s1.getDiem2()))));
-			return students.stream().limit(5).collect(Collectors.toList());
-		case "Khối A1":
-			students.sort((s1, s2) -> String.valueOf((s2.getToan() + s2.getDiem1() + s2.getAnh()))
-					.compareTo(String.valueOf((s1.getToan() + s1.getDiem1() + s1.getAnh()))));
-			return students.stream().limit(5).collect(Collectors.toList());
-		case "Khối B":
-			students.sort((s1, s2) -> String.valueOf((s2.getToan() + s2.getDiem2() + s2.getDiem3()))
-					.compareTo(String.valueOf((s1.getToan() + s1.getDiem2() + s1.getDiem3()))));
-			return students.stream().limit(5).collect(Collectors.toList());
-		case "Khối C":
-			students.sort((s1, s2) -> String.valueOf((s2.getVan() + s2.getDiem1() + s2.getDiem2()))
-					.compareTo(String.valueOf((s1.getVan() + s1.getDiem1() + s1.getDiem2()))));
-			return students.stream().limit(5).collect(Collectors.toList());
-		case "Khối D":
-			students.sort((s1, s2) -> String.valueOf((s2.getToan() + s2.getVan() + s2.getAnh()))
-					.compareTo(String.valueOf((s1.getToan() + s1.getVan() + s1.getAnh()))));
-			return students.stream().limit(5).collect(Collectors.toList());
-		default:
-			students.sort((s1, s2) -> String
-					.valueOf((s2.getToan() + s2.getVan() + s2.getAnh()) + s2.getDiem1() + s2.getDiem2() + s2.getDiem3())
-					.compareTo(String.valueOf((s1.getToan() + s1.getVan() + s1.getAnh() + s1.getDiem1() + s1.getDiem2()
-							+ s1.getDiem3()))));
-			return students.stream().limit(5).collect(Collectors.toList());
-		}
-	}
-
 	private String splitSpace(String input) {
 		return Pattern.compile(" ").splitAsStream(input).filter(in -> !in.equals("")).collect(Collectors.joining());
 	}

@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Properties;
 
-import connection.ConfigurationProvider;
-import connection.ConfigurationProviderImpl;
-import view.UIClient;
+import javax.swing.JOptionPane;
+
+import utils.ConfigurationProvider;
+import utils.ConfigurationProviderImpl;
+import view.FrameClient;
 
 public class Client {
 	private final ConfigurationProvider provider;
@@ -24,8 +26,10 @@ public class Client {
 		try {
 			socket = new Socket(ip, port);
 			System.out.println("Connected: " + socket);
-			new UIClient(socket).setVisible(true);
+			new FrameClient(socket).setVisible(true);
 		} catch (IOException ie) {
+			JOptionPane.showConfirmDialog(null, "Could not connect to the Server!", "Connection Failed",
+					JOptionPane.CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
 			System.out.println("Can't connect to server");
 		}
 	}

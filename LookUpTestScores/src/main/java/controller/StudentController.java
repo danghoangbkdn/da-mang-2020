@@ -7,5 +7,7 @@ import entity.Student;
 public interface StudentController {
 	Student searchStudent(String id, int year);
 
-	List<Student> getListStudentsByYear(int year);
+	int getAll(Object obj);
+
+	List<Student> getListStudentsByRequest(Object obj);
 }

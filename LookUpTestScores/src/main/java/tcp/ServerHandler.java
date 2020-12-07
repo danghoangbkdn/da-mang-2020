@@ -11,12 +11,14 @@ import java.util.List;
 import controller.StudentController;
 import controller.StudentControllerImpl;
 import entity.RequestSearch;
-import entity.RequestGetListStudentsByYear;
+import entity.RequestGetAll;
+import entity.RequestGetListStudentsByRequest;
 import entity.Student;
 
 public class ServerHandler extends Thread {
 
 	private final StudentController controller;
+	private final int location;
 
 	private DataInputStream dis = null;
 	private ObjectInputStream ois = null;
@@ -25,6 +27,7 @@ public class ServerHandler extends Thread {
 
 	public ServerHandler(Socket socket, int location) {
 		controller = new StudentControllerImpl();
+		this.location = location;
 
 		while (true) {
 			try {
@@ -38,19 +41,11 @@ public class ServerHandler extends Thread {
 					try {
 						Object obj = ois.readObject();
 						if (obj instanceof RequestSearch) {
-							if (((RequestSearch) obj).getRequest().equals("Search")) {
-								System.out.println("- Request from Client[" + location + "] : Search");
-								oos.writeObject(searchStudent(obj));
-								continue;
-							}
-						}
-						if (obj instanceof RequestGetListStudentsByYear) {
-							if (((RequestGetListStudentsByYear) obj).getRequest()
-									.equals("Get List<Student> students by year")) {
-								System.out.println(
-										"- Request from Client[" + location + "] : Get List<Student> students by year");
-								oos.writeObject(getListStudentsByYear(obj));
-							}
+							oos.writeObject(searchStudent((RequestSearch) obj));
+						} else if ((obj instanceof RequestGetAll)) {
+							oos.writeObject(getAll((RequestGetAll) obj));
+						} else if (obj instanceof RequestGetListStudentsByRequest) {
+							oos.writeObject(getListStudentsByRequest((RequestGetListStudentsByRequest) obj));
 						}
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
@@ -72,11 +67,21 @@ public class ServerHandler extends Thread {
 		}
 	}
 
-	private Student searchStudent(Object obj) {
+	private Student searchStudent(RequestSearch obj) {
+		System.out.println("- Request from Client[" + location + "] : " + obj.getRequest() + " -> " + obj.getInputId()
+				+ " -> " + obj.getInputYear());
 		return controller.searchStudent(((RequestSearch) obj).getInputId(), ((RequestSearch) obj).getInputYear());
 	}
 
-	private List<Student> getListStudentsByYear(Object obj) {
-		return controller.getListStudentsByYear(((RequestGetListStudentsByYear) obj).getYear());
+	private int getAll(RequestGetAll obj) {
+		System.out.println("- Request from Client[" + location + "] : " + obj.getNameRequest() + " -> "
+				+ obj.getRequest() + " -> " + obj.getYear());
+		return controller.getAll(obj);
+	}
+
+	private List<Student> getListStudentsByRequest(RequestGetListStudentsByRequest obj) {
+		System.out.println("- Request from Client[" + location + "] : " + obj.getNameRequest() + " -> "
+				+ obj.getRequest() + " -> " + obj.getYear() + " -> " + obj.getPage());
+		return controller.getListStudentsByRequest(obj);
 	}
 }

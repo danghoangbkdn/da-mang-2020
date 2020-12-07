@@ -17,7 +17,7 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public List<Student> getListStudents() {
-		return Optional.ofNullable(dao.getListStudents()).orElse(Collections.emptyList());
+	public List<Student> getListStudentsByYear(int year) {
+		return Optional.ofNullable(dao.getListStudentsByYear(year)).orElse(Collections.emptyList());
 	}
 }

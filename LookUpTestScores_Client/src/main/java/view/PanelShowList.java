@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -15,12 +16,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -33,7 +31,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
 
-import entity.RequestGetListStudentsByYear;
+import entity.RequestGetAll;
+import entity.RequestGetListStudentsByRequest;
 import entity.Student;
 import tcp.ClientHandler;
 import utils.StudentUtils;
@@ -47,38 +46,50 @@ public class PanelShowList extends JPanel {
 	private JPanel pnCenterTop;
 	private JTextField tfSearch;
 	private JLabel lbNot;
-	private JButton btSearch;
+	private JComboBox<String> cbSearch;
 	private JLabel lbYear;
 	private JComboBox<String> cbYears;
 	private JLabel lbExamCluster;
 	private JComboBox<String> cbExamCluster;
 	private JLabel lbTopStudent;
 	private JComboBox<String> cbTopStudent;
-	private JPanel pnBot;
+	private JPanel pnCenter;
 	private JScrollPane spResult;
 	private JTable tbResult;
 	private DefaultTableModel tbmdResult;
 	private String[] columnNames;
+	private JPanel pnBot;
+	private JButton btBefore;
+	private JButton btAfter;
+	private JLabel lbPage;
+	private JComboBox<Integer> cbPage;
 
 	private final BorderLayout borderLayout = new BorderLayout();
 	private final BorderLayout borderLayoutPanelTop = new BorderLayout();
+	private final BorderLayout borderLayoutPanelCenter = new BorderLayout();
+	private final FlowLayout flowLayout = new FlowLayout();
 	private final Font font = new FontUIResource("Tamaho", Font.PLAIN, 13);
 	private final Border borderTop = BorderFactory.createLineBorder(new Color(0, 51, 51), 2);
 	private final Border borderLeftTop = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 			"TÌM KIẾM", TitledBorder.CENTER, TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 13), new Color(0, 0, 204));
 	private final Border borderCenterTop = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 			"TIỆN ÍCH", TitledBorder.CENTER, TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 13), new Color(0, 0, 204));
-	private final Border outsideBorderBot = BorderFactory.createLineBorder(new Color(204, 0, 102), 2);
-	private final Border insideBorderBot = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+	private final Border outsideBorderCenter = BorderFactory.createLineBorder(new Color(204, 0, 102), 2);
+	private final Border insideBorderCenter = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 			"DANH SÁCH", TitledBorder.CENTER, TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 13),
 			new Color(0, 0, 204));
-	private final Border borderBot = BorderFactory.createCompoundBorder(outsideBorderBot, insideBorderBot);
+	private final Border borderCenter = BorderFactory.createCompoundBorder(outsideBorderCenter, insideBorderCenter);
 
 	private final ClientHandler client;
 	private final StudentUtils studentUtils;
 	private List<Student> students;
-	private List<Student> stds;
+	private Object requestName = 2020;
+	private String name = "Year";
+	private int allStudent;
 	private int year = 2020;
+	private int page = 1;
+	private int numberPage;
+	private Integer[] numberPages;
 
 	public PanelShowList(ClientHandler client) {
 		this.client = client;
@@ -97,53 +108,55 @@ public class PanelShowList extends JPanel {
 		pnCenterTop = new JPanel();
 		tfSearch = new JTextField();
 		lbNot = new JLabel();
-		btSearch = new JButton();
+		cbSearch = new JComboBox<>();
 		lbYear = new JLabel();
 		cbYears = new JComboBox<>();
 		lbExamCluster = new JLabel();
 		cbExamCluster = new JComboBox<>();
 		lbTopStudent = new JLabel();
 		cbTopStudent = new JComboBox<>();
-		pnBot = new JPanel();
+		pnCenter = new JPanel();
 		spResult = new JScrollPane();
 		tbResult = new JTable();
 		tbmdResult = new DefaultTableModel();
 		columnNames = new String[] { "SBD", "Họ Tên", "Ngày Sinh", "Trường THPT", "Cụm Thi", "Năm Thi" };
+		pnBot = new JPanel();
+		btBefore = new JButton();
+		btAfter = new JButton();
+		lbPage = new JLabel();
+		cbPage = new JComboBox<>();
 
 		pnTop.setLayout(borderLayoutPanelTop);
 		pnTop.setPreferredSize(new Dimension(0, 70));
 		pnTop.setBorder(borderTop);
 
 		pnLeftTop.setLayout(null);
-		pnLeftTop.setPreferredSize(new Dimension(340, 0));
+		pnLeftTop.setPreferredSize(new Dimension(280, 0));
 		pnLeftTop.setBackground(new Color(0, 255, 255));
 		pnLeftTop.setBorder(borderLeftTop);
 
 		tfSearch.setFont(font);
-		tfSearch.setBounds(20, 23, 235, 35);
+		tfSearch.setBounds(22, 28, 235, 30);
 		pnLeftTop.add(tfSearch);
 
-		lbNot.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lbNot.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lbNot.setForeground(Color.RED);
 		lbNot.setText("Không tìm thấy !");
-		lbNot.setBounds(20, 6, getPreWidth(lbNot), getPreHeight(lbNot));
+		lbNot.setBounds((getPreWidth(pnLeftTop) - getPreWidth(lbNot)) / 2, 14, getPreWidth(lbNot), getPreHeight(lbNot));
 		lbNot.setVisible(false);
 		pnLeftTop.add(lbNot);
 
-		btSearch.setFont(font);
-//		btnSearch.setBackground(new Color(0, 0, 0, 0));
-//		btnSearch.setAutoscrolls(false);
-//		btnSearch.setBorderPainted(false);
-		Icon icon = new ImageIcon(getClass().getResource("/icons/search.jpg"));
-		btSearch.setIcon(icon);
-		btSearch.setBounds(270, 23, 50, 35);
-		btSearch.setFocusable(false);
-		btSearch.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		pnLeftTop.add(btSearch);
+//		cbSearch.setFont(font);
+//		cbSearch.setModel(new DefaultComboBoxModel<String>(new String[] { "All", "Năm", "Cụm" }));
+//		cbSearch.setSelectedItem("Năm");
+//		cbSearch.setBounds(270, 23, getPreWidth(cbSearch), getPreHeight(cbSearch));
+//		cbSearch.setFocusable(false);
+//		cbSearch.setCursor(new Cursor(Cursor.HAND_CURSOR));
+//		pnLeftTop.add(cbSearch);
 
 		pnTop.add(pnLeftTop, WEST);
 
-		pnCenterTop.setLayout(null);
+		pnCenterTop.setLayout(flowLayout);
 		pnCenterTop.setBackground(new Color(0, 255, 255));
 		pnCenterTop.setBorder(borderCenterTop);
 
@@ -173,8 +186,8 @@ public class PanelShowList extends JPanel {
 		pnCenterTop.add(cbExamCluster);
 
 		lbTopStudent.setFont(font);
-		lbTopStudent.setText("TOP 5: ");
-		lbTopStudent.setBounds(350, 30, getPreWidth(lbTopStudent), getPreHeight(lbTopStudent));
+		lbTopStudent.setText("TOP 10: ");
+		lbTopStudent.setBounds(348, 30, getPreWidth(lbTopStudent), getPreHeight(lbTopStudent));
 		pnCenterTop.add(lbTopStudent);
 
 		cbTopStudent.setFont(font);
@@ -182,81 +195,64 @@ public class PanelShowList extends JPanel {
 				new String[] { "All Subject", "Khối A", "Khối A1", "Khối B", "Khối C", "Khối D" }));
 		cbTopStudent.setSelectedItem("All Subject");
 		cbTopStudent.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		cbTopStudent.setBounds(350 + getPreWidth(lbTopStudent), 23, getPreWidth(cbTopStudent), 35);
+		cbTopStudent.setBounds(348 + getPreWidth(lbTopStudent), 23, getPreWidth(cbTopStudent), 35);
 		pnCenterTop.add(cbTopStudent);
 
 		pnTop.add(pnCenterTop, CENTER);
 
 		add(pnTop, NORTH);
 
-		pnBot.setLayout(null);
-		pnBot.setBackground(Color.WHITE);
-		pnBot.setBorder(borderBot);
+		pnCenter.setLayout(borderLayoutPanelCenter);
+		pnCenter.setPreferredSize(new Dimension(0, PanelShowList.this.getPreferredSize().height - getPreHeight(pnTop)));
+		pnCenter.setBackground(Color.WHITE);
+		pnCenter.setBorder(borderCenter);
 
 		tbResult.setModel(tbmdResult);
 		tbResult.setFont(font);
 		tbResult.setRowHeight(20);
+		tbResult.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		tbResult.setBackground(new Color(255, 204, 204));
-		spResult.setBounds(10, 18, 832, 361);
+		spResult.setBounds(10, 18, getPreWidth(pnCenter) - 102, getPreHeight(pnCenter) - 77);
 		setTableColumns();
-		getListStudentsByYear();
-		setTableRowsByYear();
+		setListStudentsByYear();
 		spResult.setViewportView(tbResult);
-		pnBot.add(spResult);
+		pnCenter.add(spResult);
 
-		add(pnBot, CENTER);
-	}
+		add(pnCenter, CENTER);
 
-	private void initEvents() {
-		tfSearch.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					search();
-				}
-			}
-		});
+		pnBot.setLayout(flowLayout);
+		pnBot.setBorder(borderTop);
+		pnBot.setBackground(new Color(0, 153, 153));
+		flowLayout.setHgap(15);
 
-		btSearch.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				search();
-			}
-		});
+		btBefore.setFont(font);
+		btBefore.setText("Trước");
+		btBefore.setFocusable(false);
+		btBefore.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		pnBot.add(btBefore);
 
-		tbResult.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				String id = tbResult.getValueAt(tbResult.getSelectedRow(), 0).toString();
-				new UIInformation(studentUtils.getStudent(students, id)).setVisible(true);
-			}
-		});
+		lbPage.setFont(new Font("Tahome", Font.BOLD, 13));
+		lbPage.setForeground(Color.BLUE);
+		lbPage.setText("Trang");
+		lbPage.setBounds(0, 0, getPreWidth(lbPage), getPreHeight(lbPage));
+		pnBot.add(lbPage);
 
-		cbYears.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				tbmdResult.setRowCount(0);
-				year = Integer.parseInt((String) cbYears.getSelectedItem());
-				getListStudentsByYear();
-				setTableRowsByYear();
-			}
-		});
+		cbPage.setFont(new Font("Tahome", Font.BOLD, 13));
+		cbPage.setForeground(Color.BLUE);
+		setComboxPage();
+		cbPage.setModel(new DefaultComboBoxModel<>(numberPages));
+		cbPage.setSelectedItem(numberPages[0]);
+		cbPage.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		pnBot.add(cbPage);
 
-		cbExamCluster.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				tbmdResult.setRowCount(0);
-				setTableRowsByExamCluster(String.valueOf(cbExamCluster.getSelectedItem()));
-			}
-		});
+		btAfter.setFont(font);
+		btAfter.setText("Sau");
+		btAfter.setFocusable(false);
+		btAfter.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		btAfter.setBounds(0, 0, getPreWidth(btBefore), getPreHeight(btAfter));
+		pnBot.add(btAfter);
 
-		cbTopStudent.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				tbmdResult.setRowCount(0);
-				setTableRowsByTopStudent(String.valueOf(cbTopStudent.getSelectedItem()));
-			}
-		});
+		add(pnBot, SOUTH);
 	}
 
 	private void setTableColumns() {
@@ -272,28 +268,151 @@ public class PanelShowList extends JPanel {
 		tbResult.getColumnModel().getColumn(5).setPreferredWidth(90);
 	}
 
-	private void setTableRowsByYear() {
+	private void setListStudentsByYear() {
+		getAll("GetAll", year);
+		RequestGetListStudentsByRequest request = new RequestGetListStudentsByRequest(name, year, year,
+				numberPages.length, page);
+		students = client.getListStudentsByRequest(request);
+
 		for (Object[] student : studentUtils.convertValue(students)) {
 			tbmdResult.addRow(new Object[] { student[0], student[1], student[2], student[3], student[4], student[5] });
 		}
 	}
 
-	private void getListStudentsByYear() {
-		RequestGetListStudentsByYear request = new RequestGetListStudentsByYear("Get List<Student> students by year",
-				year);
-		students = client.getListStudentsByYear(request);
-	}
+	private void setListStudentsByYear1() {
+		RequestGetListStudentsByRequest request = new RequestGetListStudentsByRequest(name, requestName, year,
+				numberPages.length, page);
+		System.out.println(name + "-" + requestName + "-" + year + "-" + page);
+		students = client.getListStudentsByRequest(request);
+		System.out.println(students.size());
 
-	private void setTableRowsByExamCluster(String examCluster) {
-		stds = students.stream().filter(s -> s.getExamcluster().equals(examCluster)).collect(Collectors.toList());
-		for (Object[] student : studentUtils.convertValue(stds)) {
+		for (Object[] student : studentUtils.convertValue(students)) {
 			tbmdResult.addRow(new Object[] { student[0], student[1], student[2], student[3], student[4], student[5] });
 		}
 	}
 
-	private void setTableRowsByTopStudent(String request) {
-		stds = studentUtils.getTopStudents(students, request);
-		for (Object[] student : studentUtils.convertValue(stds)) {
+	private void getAll(String nameRequest, Object rq) {
+		RequestGetAll request = new RequestGetAll(nameRequest, rq, year);
+		allStudent = client.getAll(request);
+		setComboxPage();
+	}
+
+	private void setComboxPage() {
+		numberPage = (allStudent - 1) / 50 + 1;
+		numberPages = new Integer[numberPage];
+		for (int i = 1; i <= numberPage; i++) {
+			numberPages[i - 1] = i;
+		}
+		cbPage.setModel(new DefaultComboBoxModel<>(numberPages));
+		cbPage.setSelectedItem(numberPages[0]);
+	}
+
+	private void initEvents() {
+		tfSearch.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				search();
+			}
+		});
+
+		cbSearch.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+			}
+		});
+
+		tbResult.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				String id = tbResult.getValueAt(tbResult.getSelectedRow(), 0).toString();
+				new FrameInformation(studentUtils.getStudent(students, id)).setVisible(true);
+			}
+		});
+
+		cbYears.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				page = 1;
+				name = "Year";
+				requestName = (String) cbYears.getSelectedItem();
+				tbmdResult.setRowCount(0);
+				year = Integer.parseInt((String) requestName);
+				setListStudentsByYear();
+			}
+		});
+
+		cbExamCluster.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				name = "ExamCluster";
+				tbmdResult.setRowCount(0);
+				requestName = (String) cbExamCluster.getSelectedItem();
+				setTableRowsByExamCluster(String.valueOf(cbExamCluster.getSelectedItem()));
+			}
+		});
+
+		cbTopStudent.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				name = "Top";
+				tbmdResult.setRowCount(0);
+				requestName = (String) cbTopStudent.getSelectedItem();
+				setTableRowsByTopStudent(String.valueOf(cbTopStudent.getSelectedItem()));
+			}
+		});
+
+		cbPage.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				tbmdResult.setRowCount(0);
+				page = (int) cbPage.getSelectedItem();
+				setListStudentsByYear1();
+			}
+		});
+
+		btBefore.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (page > 1) {
+					page--;
+					setListStudentsByYear1();
+					cbPage.setSelectedItem(page);
+				}
+			}
+		});
+
+		btAfter.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (page < numberPage) {
+					page++;
+					setListStudentsByYear1();
+					cbPage.setSelectedItem(page);
+				}
+			}
+		});
+	}
+
+	private void setTableRowsByExamCluster(String examCluster) {
+		page = 1;
+		getAll("GetByExamCluster", examCluster);
+		RequestGetListStudentsByRequest request = new RequestGetListStudentsByRequest("ExamCluster", examCluster, year,
+				numberPages.length, page);
+		students = client.getListStudentsByRequest(request);
+		System.out.println(students.size());
+		for (Object[] student : studentUtils.convertValue(students)) {
+			tbmdResult.addRow(new Object[] { student[0], student[1], student[2], student[3], student[4], student[5] });
+		}
+	}
+
+	private void setTableRowsByTopStudent(String requestTop) {
+		page = 1;
+		getAll("GetByTop", 10);
+		RequestGetListStudentsByRequest request = new RequestGetListStudentsByRequest("TopStudent", requestTop, year,
+				numberPages.length, page);
+		students = client.getListStudentsByRequest(request);
+		for (Object[] student : studentUtils.convertValue(students)) {
 			tbmdResult.addRow(new Object[] { student[0], student[1], student[2], student[3], student[4], student[5] });
 		}
 	}
@@ -302,9 +421,7 @@ public class PanelShowList extends JPanel {
 		String input = tfSearch.getText();
 		String pattern = "[!\\\"#$%&'()*+,-./:;<=>?@[\\\\]^_`{|}~}]+";
 
-		if (input.isEmpty()) {
-			return;
-		} else if (!input.trim().matches(pattern)) {
+		if (!input.trim().matches(pattern)) {
 			tbmdResult.setRowCount(0);
 			List<Student> students = studentUtils.searchByIdAndName(this.students, input);
 			if (students.size() > 0) {
@@ -317,6 +434,7 @@ public class PanelShowList extends JPanel {
 				lbNot.setVisible(true);
 			}
 		} else {
+			tbmdResult.setRowCount(0);
 			lbNot.setVisible(true);
 		}
 	}

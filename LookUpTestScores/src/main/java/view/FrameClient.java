@@ -12,6 +12,7 @@ import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.Socket;
+import java.util.EnumMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -30,12 +31,13 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.FontUIResource;
 
+import common.EnumPanel;
 import tcp.ClientHandler;
 
 import static utils.CompUtils.*;
 
 @SuppressWarnings("serial")
-public class UIClient extends JFrame {
+public class FrameClient extends JFrame {
 
 	private JPanel pnTop;
 	private JPanel pnLeft;
@@ -70,10 +72,15 @@ public class UIClient extends JFrame {
 	private final Container con = getContentPane();
 
 	private final ClientHandler client;
+	private final EnumMap<EnumPanel, JPanel> enumMap;
 
-	public UIClient(Socket socket) {
+	public FrameClient(Socket socket) {
 		client = new ClientHandler(socket);
 		client.run();
+		enumMap = new EnumMap<>(EnumPanel.class);
+		enumMap.put(EnumPanel.HOME, new PanelHomePage());
+		enumMap.put(EnumPanel.SEARCH, new PanelSearch(client));
+		enumMap.put(EnumPanel.LIST, new PanelShowList(client));
 
 		initComponents();
 		addEvent();
@@ -188,7 +195,8 @@ public class UIClient extends JFrame {
 			public void mousePressed(MouseEvent e) {
 //				cardLayout.show(pnCenter, "Home Page");
 				pnCenter.removeAll();
-				pnCenter.add(new PanelHomePage(), CENTER);
+				JPanel panel = enumMap.get(EnumPanel.from("HOME"));
+				pnCenter.add(panel);
 				pnCenter.repaint();
 
 				setDefaultButton(defaultButton);
@@ -221,7 +229,8 @@ public class UIClient extends JFrame {
 			public void mousePressed(MouseEvent e) {
 //				cardLayout.show(pnCenter, "Looking For Students");
 				pnCenter.removeAll();
-				pnCenter.add(new PanelSearch(client), CENTER);
+				JPanel panel = enumMap.get(EnumPanel.from("SEARCH"));
+				pnCenter.add(panel);
 				pnCenter.repaint();
 
 				setDefaultButton(defaultButton);
@@ -254,7 +263,8 @@ public class UIClient extends JFrame {
 			public void mousePressed(MouseEvent e) {
 //				cardLayout.show(pnCenter, "Show List Students");
 				pnCenter.removeAll();
-				pnCenter.add(new PanelShowList(client), CENTER);
+				JPanel panel = enumMap.get(EnumPanel.from("LIST"));
+				pnCenter.add(panel);
 				pnCenter.repaint();
 
 				setDefaultButton(defaultButton);
