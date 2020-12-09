@@ -15,6 +15,7 @@ public class StudentControllerImpl implements StudentController {
 	private final StudentService service;
 	private List<Student> students;
 	private List<Student> studentsByCluster;
+	private List<Student> topList;
 	private int top;
 
 	public StudentControllerImpl() {
@@ -86,21 +87,25 @@ public class StudentControllerImpl implements StudentController {
 	private List<Student> getTopStudents(List<Student> students, String request) {
 		switch (request) {
 		case "Khối A":
-			students.sort((s1, s2) -> String.valueOf((s2.getToan() + s2.getDiem1() + s2.getDiem2()))
+			topList = students.stream().filter(s -> s.getMonTH().equals("KHTN")).collect(Collectors.toList());
+			topList.sort((s1, s2) -> String.valueOf((s2.getToan() + s2.getDiem1() + s2.getDiem2()))
 					.compareTo(String.valueOf((s1.getToan() + s1.getDiem1() + s1.getDiem2()))));
-			return students.stream().limit(top).collect(Collectors.toList());
+			return topList.stream().limit(top).collect(Collectors.toList());
 		case "Khối A1":
-			students.sort((s1, s2) -> String.valueOf((s2.getToan() + s2.getDiem1() + s2.getAnh()))
+			topList = students.stream().filter(s -> s.getMonTH().equals("KHTN")).collect(Collectors.toList());
+			topList.sort((s1, s2) -> String.valueOf((s2.getToan() + s2.getDiem1() + s2.getAnh()))
 					.compareTo(String.valueOf((s1.getToan() + s1.getDiem1() + s1.getAnh()))));
-			return students.stream().limit(top).collect(Collectors.toList());
+			return topList.stream().limit(top).collect(Collectors.toList());
 		case "Khối B":
-			students.sort((s1, s2) -> String.valueOf((s2.getToan() + s2.getDiem2() + s2.getDiem3()))
+			topList = students.stream().filter(s -> s.getMonTH().equals("KHTN")).collect(Collectors.toList());
+			topList.sort((s1, s2) -> String.valueOf((s2.getToan() + s2.getDiem2() + s2.getDiem3()))
 					.compareTo(String.valueOf((s1.getToan() + s1.getDiem2() + s1.getDiem3()))));
-			return students.stream().limit(top).collect(Collectors.toList());
+			return topList.stream().limit(top).collect(Collectors.toList());
 		case "Khối C":
-			students.sort((s1, s2) -> String.valueOf((s2.getVan() + s2.getDiem1() + s2.getDiem2()))
+			topList = students.stream().filter(s -> s.getMonTH().equals("KHXH")).collect(Collectors.toList());
+			topList.sort((s1, s2) -> String.valueOf((s2.getVan() + s2.getDiem1() + s2.getDiem2()))
 					.compareTo(String.valueOf((s1.getVan() + s1.getDiem1() + s1.getDiem2()))));
-			return students.stream().limit(top).collect(Collectors.toList());
+			return topList.stream().limit(top).collect(Collectors.toList());
 		case "Khối D":
 			students.sort((s1, s2) -> String.valueOf((s2.getToan() + s2.getVan() + s2.getAnh()))
 					.compareTo(String.valueOf((s1.getToan() + s1.getVan() + s1.getAnh()))));

@@ -28,7 +28,7 @@ ENGINE = InnoDB;
 
 -- insert data `montohop`
 
-INSERT INTO `montohop` VALUES (11, 'KTTN'),
+INSERT INTO `montohop` VALUES (11, 'KHTN'),
 							  (12, 'KHXH');
 
 -- -----------------------------------------------------
