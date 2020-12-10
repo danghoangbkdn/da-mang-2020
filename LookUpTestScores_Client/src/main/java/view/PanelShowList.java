@@ -9,6 +9,8 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -46,7 +48,6 @@ public class PanelShowList extends JPanel {
 	private JPanel pnCenterTop;
 	private JTextField tfSearch;
 	private JLabel lbNot;
-	private JComboBox<String> cbSearch;
 	private JLabel lbYear;
 	private JComboBox<String> cbYears;
 	private JLabel lbExamCluster;
@@ -108,7 +109,6 @@ public class PanelShowList extends JPanel {
 		pnCenterTop = new JPanel();
 		tfSearch = new JTextField();
 		lbNot = new JLabel();
-		cbSearch = new JComboBox<>();
 		lbYear = new JLabel();
 		cbYears = new JComboBox<>();
 		lbExamCluster = new JLabel();
@@ -146,14 +146,6 @@ public class PanelShowList extends JPanel {
 		lbNot.setVisible(false);
 		pnLeftTop.add(lbNot);
 
-//		cbSearch.setFont(font);
-//		cbSearch.setModel(new DefaultComboBoxModel<String>(new String[] { "All", "Năm", "Cụm" }));
-//		cbSearch.setSelectedItem("Năm");
-//		cbSearch.setBounds(270, 23, getPreWidth(cbSearch), getPreHeight(cbSearch));
-//		cbSearch.setFocusable(false);
-//		cbSearch.setCursor(new Cursor(Cursor.HAND_CURSOR));
-//		pnLeftTop.add(cbSearch);
-
 		pnTop.add(pnLeftTop, WEST);
 
 		pnCenterTop.setLayout(flowLayout);
@@ -162,19 +154,19 @@ public class PanelShowList extends JPanel {
 
 		lbYear.setFont(font);
 		lbYear.setText("Chọn năm: ");
-		lbYear.setBounds(18, 30, getPreWidth(lbYear), getPreHeight(lbYear));
+		lbYear.setBounds(10, 30, getPreWidth(lbYear), getPreHeight(lbYear));
 		pnCenterTop.add(lbYear);
 
 		cbYears.setFont(font);
 		cbYears.setModel(new DefaultComboBoxModel<>(new String[] { "2019", "2020" }));
 		cbYears.setSelectedItem("2020");
 		cbYears.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		cbYears.setBounds(18 + getPreWidth(lbYear), 23, getPreWidth(cbYears) + 23, 35);
+		cbYears.setBounds(10 + getPreWidth(lbYear), 23, getPreWidth(cbYears) + 10, 35);
 		pnCenterTop.add(cbYears);
 
 		lbExamCluster.setFont(font);
 		lbExamCluster.setText("Cụm thi: ");
-		lbExamCluster.setBounds(182, 30, getPreWidth(lbExamCluster), getPreHeight(lbExamCluster));
+		lbExamCluster.setBounds(160, 30, getPreWidth(lbExamCluster), getPreHeight(lbExamCluster));
 		pnCenterTop.add(lbExamCluster);
 
 		cbExamCluster.setFont(font);
@@ -182,12 +174,12 @@ public class PanelShowList extends JPanel {
 				"Hà Tĩnh", "Đà Nẵng", "Khánh Hòa", "Đồng Nai", "Hồ Chí Minh", "Cần Thơ" }));
 		cbExamCluster.setSelectedItem("Hà Nội");
 		cbExamCluster.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		cbExamCluster.setBounds(182 + getPreWidth(lbExamCluster), 23, getPreWidth(cbExamCluster), 35);
+		cbExamCluster.setBounds(160 + getPreWidth(lbExamCluster), 23, getPreWidth(cbExamCluster), 35);
 		pnCenterTop.add(cbExamCluster);
 
 		lbTopStudent.setFont(font);
 		lbTopStudent.setText("TOP 10: ");
-		lbTopStudent.setBounds(348, 30, getPreWidth(lbTopStudent), getPreHeight(lbTopStudent));
+		lbTopStudent.setBounds(325, 30, getPreWidth(lbTopStudent), getPreHeight(lbTopStudent));
 		pnCenterTop.add(lbTopStudent);
 
 		cbTopStudent.setFont(font);
@@ -195,7 +187,7 @@ public class PanelShowList extends JPanel {
 				new String[] { "All Subject", "Khối A", "Khối A1", "Khối B", "Khối C", "Khối D" }));
 		cbTopStudent.setSelectedItem("All Subject");
 		cbTopStudent.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		cbTopStudent.setBounds(348 + getPreWidth(lbTopStudent), 23, getPreWidth(cbTopStudent), 35);
+		cbTopStudent.setBounds(325 + getPreWidth(lbTopStudent), 23, getPreWidth(cbTopStudent), 35);
 		pnCenterTop.add(cbTopStudent);
 
 		pnTop.add(pnCenterTop, CENTER);
@@ -315,13 +307,6 @@ public class PanelShowList extends JPanel {
 			}
 		});
 
-		cbSearch.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-		});
-
 		tbResult.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -330,9 +315,9 @@ public class PanelShowList extends JPanel {
 			}
 		});
 
-		cbYears.addItemListener(new ItemListener() {
+		cbYears.addActionListener(new ActionListener() {
 			@Override
-			public void itemStateChanged(ItemEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				page = 1;
 				name = "Year";
 				requestName = (String) cbYears.getSelectedItem();
@@ -342,23 +327,27 @@ public class PanelShowList extends JPanel {
 			}
 		});
 
-		cbExamCluster.addItemListener(new ItemListener() {
+		cbExamCluster.addActionListener(new ActionListener() {
 			@Override
-			public void itemStateChanged(ItemEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				name = "ExamCluster";
 				tbmdResult.setRowCount(0);
 				requestName = (String) cbExamCluster.getSelectedItem();
-				setTableRowsByExamCluster(String.valueOf(cbExamCluster.getSelectedItem()));
+				if (!String.valueOf(requestName).equals("Cụm thi")) {
+					setTableRowsByExamCluster(String.valueOf(cbExamCluster.getSelectedItem()));
+				}
 			}
 		});
 
-		cbTopStudent.addItemListener(new ItemListener() {
+		cbTopStudent.addActionListener(new ActionListener() {
 			@Override
-			public void itemStateChanged(ItemEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				name = "Top";
 				tbmdResult.setRowCount(0);
 				requestName = (String) cbTopStudent.getSelectedItem();
-				setTableRowsByTopStudent(String.valueOf(cbTopStudent.getSelectedItem()));
+				if (!String.valueOf(requestName).equals("TOP 10")) {
+					setTableRowsByTopStudent(String.valueOf(cbTopStudent.getSelectedItem()));
+				}
 			}
 		});
 

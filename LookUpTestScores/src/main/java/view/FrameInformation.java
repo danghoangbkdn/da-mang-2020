@@ -49,8 +49,11 @@ public class FrameInformation extends JFrame {
 	private final Font textFontTwo = new FontUIResource("Tamaho", Font.BOLD, 12);
 	private final Font titleFontTwo = new FontUIResource("Tamaho", Font.BOLD, 15);
 	private final BorderLayout borderLayout = new BorderLayout();
-	private final Border borderTop = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "THÔNG TIN",
-			TitledBorder.LEFT, TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 11), new Color(0, 0, 204));
+	private final Border borderInsideTop = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
+			"THÔNG TIN", TitledBorder.LEFT, TitledBorder.TOP, new Font("Tahoma", Font.BOLD, 13), new Color(0, 0, 204));
+	private final Border borderOutsideTop = BorderFactory.createLineBorder(new Color(0, 51, 51), 2);
+	private final Border borderTop = BorderFactory.createCompoundBorder(borderOutsideTop, borderInsideTop);
+	private final Border borderBot = BorderFactory.createLineBorder(new Color(0, 51, 51), 2);
 
 	private final Student student;
 
@@ -132,7 +135,7 @@ public class FrameInformation extends JFrame {
 
 		lbId.setFont(textFontTwo);
 		lbId.setText("SDB: " + student.getId());
-		lbId.setBounds(15, 15, getPreWidth(lbId), getPreHeight(lbId));
+		lbId.setBounds(15, 20, getPreWidth(lbId), getPreHeight(lbId));
 
 		lbName.setFont(textFontTwo);
 		lbName.setText("Họ và tên: " + student.getFullname());
@@ -201,6 +204,7 @@ public class FrameInformation extends JFrame {
 		pnBot = new JPanel();
 		pnBot.setLayout(null);
 		pnBot.setBackground(new Color(0, 102, 102));
+		pnBot.setBorder(borderBot);
 
 		btCancel.setFont(new Font("Tahoma", Font.BOLD, 13));
 		btCancel.setBackground(Color.RED);
